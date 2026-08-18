@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
+  <title>同步官方内核</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f8; --fg: #1f2328; --muted: #656d76; --text: #3d444d;
+      --bar: #e6e8eb; --ok: #1a7f37; --err: #cf222e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e; --text: #c9d1d9;
+        --bar: #21262d; --ok: #3fb950; --err: #f85149;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 20px 22px;
+    }
+    h1 { font-size: 15px; margin: 0 0 12px; }
+    .bar { height: 8px; border-radius: 99px; background: var(--bar); overflow: hidden; }
+    .fill { height: 100%; width: 0; background: #2f81f7; border-radius: 99px; transition: width .25s ease; }
+    .fill.err { background: var(--err); }
+    .fill.ok { background: var(--ok); }
+    .row { display: flex; justify-content: space-between; margin-top: 8px; gap: 12px; font-size: 12px; color: var(--muted); }
+    #text { color: var(--text); font-size: 13px; margin-top: 10px; min-height: 36px; word-break: break-all; }
+    #hint { color: var(--muted); font-size: 12px; margin-top: 8px; line-height: 1.5; min-height: 32px; }
+    #err { color: var(--err); font-size: 12px; margin-top: 6px; white-space: pre-wrap; word-break: break-all; max-height: 48px; overflow: auto; }
+    .actions { margin-top: 12px; display: none; gap: 8px; }
+    .actions.show { display: flex; }
+    button {
+      padding: 7px 12px; border-radius: 8px; border: 1px solid #d0d7de;
+      background: #f3f4f6; color: var(--fg); font-size: 13px; cursor: pointer;
+    }
+    .primary { background: #2f81f7; border-color: #2f81f7; color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>同步官方内核</h1>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+  <div class="row">
+    <span id="phase">准备</span>
+    <span id="pct">0%</span>
+  </div>
+  <div id="text">正在开始…</div>
+  <div id="hint">依赖较多，进度到 90% 附近还会继续下，不是卡住。</div>
+  <div id="err"></div>
+  <div class="actions" id="actions">
+    <button class="primary" id="btn-relaunch" type="button">立即重启</button>
+    <button id="btn-close" type="button">关闭</button>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const phaseLabel = {
+      idle: '待命', check: '查询版本', prepare: '准备', resolve: '解析依赖',
+      download: '下载', extract: '解压', install: '安装', done: '完成', error: '失败', run: '进行中',
+    };
+    function apply(p) {
+      if (!p) return;
+      const n = Math.max(0, Math.min(100, Math.round(Number(p.percent) || 0)));
+      $('fill').style.width = n + '%';
+      $('fill').className = 'fill' + (p.phase === 'error' ? ' err' : p.phase === 'done' ? ' ok' : '');
+      $('pct').textContent = n + '%';
+      $('phase').textContent = phaseLabel[p.phase] || p.phase || '';
+      $('text').textContent = p.text || '';
+      if (p.hint !== undefined) $('hint').textContent = p.hint || '';
+      $('err').textContent = p.error || '';
+      const done = p.phase === 'done' || p.phase === 'error';
+      $('actions').className = 'actions' + (done ? ' show' : '');
+      $('btn-relaunch').style.display = p.phase === 'done' ? '' : 'none';
+    }
+    if (window.desktop && window.desktop.onUpdateProgress) {
+      window.desktop.onUpdateProgress(apply);
+      window.desktop.updateProgressNow().then(apply).catch(() => {});
+    }
+    $('btn-relaunch').addEventListener('click', () => window.desktop && window.desktop.relaunch());
+    $('btn-close').addEventListener('click', () => window.close());
+  </script>
+</body>
+</html>

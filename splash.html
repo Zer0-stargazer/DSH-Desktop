@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
+  <title>DSH Desktop</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f8; --fg: #1f2328; --muted: #656d76; --text: #3d444d;
+      --bar: #e6e8eb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e; --text: #c9d1d9;
+        --bar: #21262d;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-app-region: drag;
+      user-select: none;
+    }
+    .card { width: 400px; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .logo svg { display: block; width: 40px; height: 40px; }
+    h1 { font-size: 18px; margin: 0; }
+    .sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .bar {
+      height: 8px;
+      border-radius: 99px;
+      background: var(--bar);
+      overflow: hidden;
+      position: relative;
+    }
+    .fill {
+      height: 100%;
+      width: 4%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #2f81f7, #7b5cff);
+      transition: width .35s ease;
+    }
+    .shine {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      transform: translateX(-100%);
+      animation: shine 1.6s linear infinite;
+    }
+    @keyframes shine { to { transform: translateX(100%); } }
+    .row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-top: 10px; gap: 12px;
+    }
+    #text { font-size: 13px; color: var(--text); min-height: 18px; }
+    #pct { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    #hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 10px; min-height: 34px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="40" height="40">
+          <rect x="0.5" y="0.5" width="63" height="63" rx="14.5" fill="#121214" stroke="#2A2A2E" stroke-width="1"/>
+          <rect x="13.5" y="13.5" width="37" height="37" rx="8" fill="none" stroke="#E8E4DC" stroke-width="1.75"/>
+          <circle cx="32" cy="32" r="3.4" fill="#E8E4DC"/>
+        </svg>
+      </div>
+      <div>
+        <h1>DSH Desktop</h1>
+        <div class="sub">启动中</div>
+      </div>
+    </div>
+    <div class="bar">
+      <div class="fill" id="fill"></div>
+      <div class="shine"></div>
+    </div>
+    <div class="row">
+      <div id="text">正在初始化…</div>
+      <div id="pct">0%</div>
+    </div>
+    <div id="hint"></div>
+  </div>
+  <script>
+    window.__setProgress = function (percent, text, hint) {
+      const p = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+      document.getElementById('fill').style.width = p + '%';
+      document.getElementById('pct').textContent = p + '%';
+      if (text) document.getElementById('text').textContent = String(text);
+      if (hint !== undefined) document.getElementById('hint').textContent = hint ? String(hint) : '';
+    };
+  </script>
+</body>
+</html>

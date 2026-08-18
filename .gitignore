@@ -1,0 +1,44 @@
+# dependencies & build
+node_modules/
+dist/
+out/
+vendor/node/
+*.exe
+*.zip
+*.7z
+*.log
+
+# local Electron / npm / smoke data (may contain keys)
+.e2e-*/
+.test-*/
+.npm-cache/
+.research/
+.cache/
+
+# editor / OS
+.idea/
+.vscode/
+*.local
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# internal notes — stay on this machine
+HANDOFF.md
+PROJECT-MEMORY.md
+QUICKFIX.md
+TROUBLESHOOTING.md
+
+# one-off debug launchers / local wipe scripts
+test-launch.js
+test-user-walk.js
+test-npm-view.js
+test-stranger-first-run.js
+uninstall.bat
+uninstall.ps1
+
+# personal development notes and reports
+*审查*.md
+*改动记录*.md
+*接手与审查*.md
+*汇报*.md

@@ -1,0 +1,40 @@
+name: Bug
+description: Window, sync, or packaging — not official agent / plugin issues
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        内核、Agent、插件请去 [官方 Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions)。
+        不要粘贴 API Key、`keyEnc`、`.credentials.yaml`。
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: DSH Desktop version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: kernel
+    attributes:
+      label: Kernel version (Settings → Kernel)
+      placeholder: "0.1.0-rc.6 / bundled or installed"
+  - type: input
+    id: os
+    attributes:
+      label: Windows
+      placeholder: "Windows 11 24H2, 150% scale"
+  - type: checkboxes
+    id: no-secrets
+    attributes:
+      label: Confirm
+      options:
+        - label: This report does not contain API keys or credential files
+          required: true

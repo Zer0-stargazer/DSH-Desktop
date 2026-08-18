@@ -1,0 +1,133 @@
+{
+  "name": "dsh-desktop",
+  "productName": "DSH Desktop",
+  "version": "0.1.0",
+  "description": "Unofficial Windows shell for official dsh web.",
+  "author": {
+    "name": "Zer0",
+    "email": "gl20070126@gmail.com"
+  },
+  "homepage": "https://github.com/Zer0-stargazer/DSH-Desktop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zer0-stargazer/DSH-Desktop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Zer0-stargazer/DSH-Desktop/issues",
+    "email": "gl20070126@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "dsh",
+    "electron",
+    "windows",
+    "unofficial"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "os": [
+    "win32"
+  ],
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --check main.js && node --check preload.js && node --check preload-titlebar.js && node --check sync-from-web.js",
+    "test:ipc": "electron test-onboarding-ipc.js",
+    "test:about": "electron test-about.js",
+    "test:sync": "node test-sync-from-web.js",
+    "dist": "electron-builder --win",
+    "dist:dir": "electron-builder --win dir",
+    "dist:nsis": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.1.0-rc.6"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.dsh.desktop",
+    "productName": "DSH Desktop",
+    "asar": false,
+    "npmRebuild": false,
+    "electronDist": "node_modules/electron/dist",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "onboarding.html",
+      "settings.html",
+      "splash.html",
+      "about.html",
+      "update-progress.html",
+      "titlebar.html",
+      "preload-titlebar.js",
+      "sync-from-web.js",
+      "build/icon.png",
+      "build/icon-32.png",
+      "build/icon.ico",
+      "build/icon.svg",
+      "package.json",
+      "node_modules/**/*",
+      "!node_modules/electron{,/**/*}",
+      "!node_modules/electron-builder{,/**/*}",
+      "!node_modules/app-builder-bin{,/**/*}",
+      "!node_modules/7zip-bin{,/**/*}",
+      "!**/*.d.ts",
+      "!**/*.map",
+      "!**/test{,/**/*}",
+      "!**/tests{,/**/*}",
+      "!**/__tests__{,/**/*}",
+      "!**/docs{,/**/*}",
+      "!**/examples{,/**/*}",
+      "!**/.github{,/**/*}",
+      "!**/*.md",
+      "使用说明.md",
+      "!**/LICENSE*",
+      "!**/CHANGELOG*"
+    ],
+    "extraResources": [
+      {
+        "from": "vendor/node",
+        "to": "node"
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "使用说明.md",
+        "to": "使用说明.md"
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

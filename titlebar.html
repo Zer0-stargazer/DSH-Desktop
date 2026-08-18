@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self'" />
+  <title>DSH Desktop</title>
+  <style>
+    :root { color-scheme: light dark; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #f3f3f3; }
+    body { font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; user-select: none; }
+    .bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding-left: 14px;
+      box-sizing: border-box;
+      font-size: 13px;
+    }
+    .mark { width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0; margin-right: 10px; }
+    .name { color: #1f1f1f; font-weight: 600; margin-right: 10px; flex-shrink: 0; }
+    .sep { width: 1px; height: 16px; background: #d8d8d8; margin-right: 6px; flex-shrink: 0; }
+    .link {
+      border: 0;
+      background: transparent;
+      color: #3d3d3d;
+      font: inherit;
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .link:hover { background: #e6e6e6; }
+    .link:active { background: #d8d8d8; }
+    .drag { flex: 1; height: 100%; -webkit-app-region: drag; }
+    .win { display: flex; height: 100%; flex-shrink: 0; }
+    .win button {
+      width: 48px;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #3d3d3d;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 0;
+    }
+    .win button:hover { background: #e6e6e6; }
+    .win .close:hover { background: #e81123; color: #fff; }
+    @media (prefers-color-scheme: dark) {
+      html, body { background: #111; }
+      .name { color: #f0f0f0; }
+      .sep { background: #2a2a2a; }
+      .link { color: #d0d0d0; }
+      .link:hover { background: #2a2a2a; }
+      .link:active { background: #3a3a3a; }
+      .win button { color: #d0d0d0; }
+      .win button:hover { background: #2a2a2a; }
+      .win .close:hover { background: #e81123; color: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <img class="mark" src="build/icon-32.png" alt="" />
+    <span class="name">DSH Desktop</span>
+    <span class="sep"></span>
+    <button type="button" class="link" id="btn-settings">设置</button>
+    <button type="button" class="link" id="btn-about">关于</button>
+    <div class="drag" id="drag"></div>
+    <div class="win">
+      <button type="button" id="btn-min" aria-label="最小化">─</button>
+      <button type="button" id="btn-max" aria-label="最大化">□</button>
+      <button type="button" id="btn-close" class="close" aria-label="关闭">✕</button>
+    </div>
+  </div>
+  <script>
+    function api() { return window.desktopChrome; }
+    function bind(id, fn) {
+      const el = document.getElementById(id);
+      el.addEventListener('mousedown', (e) => e.stopPropagation());
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const c = api();
+        if (!c) return;
+        fn(c);
+      });
+    }
+    bind('btn-settings', (c) => c.settings());
+    bind('btn-about', (c) => c.about());
+    bind('btn-min', (c) => c.min());
+    bind('btn-max', (c) => c.toggleMax());
+    bind('btn-close', (c) => c.close());
+    document.getElementById('drag').addEventListener('dblclick', () => api() && api().toggleMax());
+  </script>
+</body>
+</html>

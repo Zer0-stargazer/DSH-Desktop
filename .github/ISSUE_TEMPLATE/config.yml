@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 窗口问题与建议（本仓库 Issues）
+    url: https://github.com/Zer0-stargazer/DSH-Desktop/issues
+    about: 启动、标题栏、同步、内核更新进度、打包。不要发送 API Key。
+  - name: Official DSH Discussions
+    url: https://github.com/deepseek-ai/deepseek-harness/discussions
+    about: Agent, plugins, models, official kernel
+  - name: Email (window / sync)
+    url: mailto:gl20070126@gmail.com
+    about: Attach a diagnostic export, no keys

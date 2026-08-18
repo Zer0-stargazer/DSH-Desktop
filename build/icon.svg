@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="DSH Desktop">
+  <!-- 薄壳：深底圆角方 + 细窗框 + 中心核。不是官方标，也不是 DS 字母。 -->
+  <rect x="0.5" y="0.5" width="63" height="63" rx="14.5" fill="#121214" stroke="#2A2A2E" stroke-width="1"/>
+  <rect x="13.5" y="13.5" width="37" height="37" rx="8" fill="none" stroke="#E8E4DC" stroke-width="1.75"/>
+  <circle cx="32" cy="32" r="3.4" fill="#E8E4DC"/>
+</svg>

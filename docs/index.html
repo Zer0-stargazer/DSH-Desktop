@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DSH Desktop</title>
+  <meta name="description" content="Unofficial Windows shell for official dsh web. 个人开发者 Zer0。" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f8; --fg: #1f2328; --muted: #656d76; --text: #3d444d;
+      --card: #fff; --border: #d0d7de; --link: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e; --text: #c9d1d9;
+        --card: #161b22; --border: #30363d; --link: #58a6ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+    main { max-width: 640px; margin: 0 auto; padding: 72px 24px 96px; }
+    .mark { width: 64px; height: 64px; display: block; margin-bottom: 20px; }
+    h1 { font-size: 28px; letter-spacing: -0.03em; margin: 0 0 8px; }
+    .sub { color: var(--muted); font-size: 14px; margin: 0 0 28px; }
+    p { color: var(--text); margin: 0 0 14px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 36px; }
+    a.btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      background: var(--card);
+    }
+    a.btn.primary { background: #2f81f7; border-color: #2f81f7; color: #fff; font-weight: 600; }
+    a.btn:hover { filter: brightness(1.06); }
+    h2 { font-size: 13px; color: var(--muted); font-weight: 600; margin: 28px 0 8px; }
+    ul { margin: 0; padding-left: 18px; color: var(--text); }
+    li { margin: 4px 0; }
+    .foot { margin-top: 48px; font-size: 13px; color: var(--muted); }
+    .foot a { color: var(--link); text-decoration: none; }
+    .foot a:hover { text-decoration: underline; }
+    code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 0.92em; }
+    #ver { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="0.5" y="0.5" width="63" height="63" rx="14.5" fill="#121214" stroke="#2A2A2E" stroke-width="1"/>
+      <rect x="13.5" y="13.5" width="37" height="37" rx="8" fill="none" stroke="#E8E4DC" stroke-width="1.75"/>
+      <circle cx="32" cy="32" r="3.4" fill="#E8E4DC"/>
+    </svg>
+    <h1>DSH Desktop</h1>
+    <p class="sub">个人开发者 Zer0 · 非官方 · Windows<br><span id="ver">版本见 Releases</span></p>
+    <p>打开官方 <code>dsh web</code> 的窗口。跟官方内核更新，把本机网页端会话留下来。不是 DeepSeek 官方客户端，也不是另一套 Agent。</p>
+    <div class="actions">
+      <a class="btn primary" id="dl" href="#">下载最新版</a>
+      <a class="btn" id="src" href="#">源码</a>
+      <a class="btn" id="log" href="#">更新记录</a>
+    </div>
+    <h2>这个窗口</h2>
+    <ul>
+      <li>自带 Node，跑官方 <code>@deepseek-ai/dsh</code></li>
+      <li>Key 只存在本机（DPAPI）</li>
+      <li>数据和命令行默认分开，也可以共用 <code>~/.dsh</code></li>
+    </ul>
+    <h2>已知会慢</h2>
+    <ul>
+      <li>同步官方内核常要数分钟到十余分钟。进度到 90% 附近往往还在下，条子偶尔会顿一下，一般不是崩</li>
+      <li>首次打开、刚更新后的第一次启动也会偏慢</li>
+    </ul>
+    <h2>不要来这里问</h2>
+    <ul>
+      <li>Agent 效果、插件、模型：官方 Discussions</li>
+    </ul>
+    <p class="foot">
+      未签名。Windows 可能提示未知发布者。<br>
+      窗口问题与建议：<a id="issues" href="https://github.com/Zer0-stargazer/DSH-Desktop/issues">GitHub Issues</a>
+      ·
+      <a href="mailto:gl20070126@gmail.com">邮箱</a>
+      ·
+      <a id="official" href="https://github.com/deepseek-ai/deepseek-harness">官方 Harness</a>
+    </p>
+  </main>
+  <script>
+    function repoFromHost() {
+      const host = location.hostname;
+      if (host.endsWith(".github.io")) {
+        const user = host.slice(0, -".github.io".length);
+        const name = location.pathname.split("/").filter(Boolean)[0];
+        if (user && name) return user + "/" + name;
+        if (user) return user + "/" + user + ".github.io";
+      }
+      return "";
+    }
+    const repo = repoFromHost() || "Zer0-stargazer/DSH-Desktop";
+    const gh = repo ? "https://github.com/" + repo : "";
+    const dl = document.getElementById("dl");
+    const src = document.getElementById("src");
+    const log = document.getElementById("log");
+    if (gh) {
+      dl.href = gh + "/releases/latest";
+      src.href = gh;
+      log.href = gh + "/blob/main/CHANGELOG.md";
+      const issues = document.getElementById("issues");
+      if (issues) issues.href = gh + "/issues";
+      fetch("https://api.github.com/repos/" + repo + "/releases/latest")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => {
+          if (j && j.tag_name) {
+            document.getElementById("ver").textContent = j.tag_name + (j.name && j.name !== j.tag_name ? " · " + j.name : "");
+          }
+        })
+        .catch(() => {});
+    } else {
+      dl.removeAttribute("href");
+      src.removeAttribute("href");
+      log.removeAttribute("href");
+    }
+  </script>
+</body>
+</html>

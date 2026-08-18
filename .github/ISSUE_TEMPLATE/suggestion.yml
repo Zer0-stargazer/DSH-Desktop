@@ -1,0 +1,18 @@
+name: 建议
+description: 对窗口本身的改进意见（不是官方 Agent / 插件）
+title: "[建议] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        只写这个窗口：打开、标题栏、同步、内核更新、打包。
+        内核、Agent、插件请去 [官方 Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions)。
+        不要粘贴 API Key。
+  - type: textarea
+    id: idea
+    attributes:
+      label: 建议
+      description: 现在怎样、希望怎样
+    validations:
+      required: true

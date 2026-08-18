@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
+  <title>关于 DSH Desktop</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f8; --fg: #1f2328; --muted: #656d76; --text: #3d444d; --link: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e; --text: #c9d1d9; --link: #58a6ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow-y: auto;
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      padding: 24px 28px 36px;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    h1 { font-size: 20px; margin: 0 0 4px; }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+    h2 { font-size: 13px; margin: 26px 0 8px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+    p, li { color: var(--text); }
+    p { margin: 0 0 10px; }
+    ul { padding-left: 18px; margin: 8px 0; }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>DSH Desktop</h1>
+  <div class="sub">个人开发者 Zer0 · 非官方。里面是官方 <span class="mono">dsh web</span>。</div>
+
+  <h2>初心</h2>
+  <p>官方 DeepSeek Harness 在 Windows 上主要是命令行和浏览器里的 <span class="mono">dsh web</span>。要用它，得自己准备 Node、自己开终端、自己记端口；网页端攒下的会话、标题、外接模型，也散落在 <span class="mono">~/.dsh</span> 里。这些步骤不难，但每次重复，和「打开一个窗口就能接着用」之间还隔着一层。</p>
+  <p>DSH Desktop 只补这一层：用官方 npm 包 <span class="mono">@deepseek-ai/dsh</span> 在独立窗口里打开 <span class="mono">dsh web</span>，启动和设置里可以跟着官方更新内核，也可以把本机网页端的会话、标题、外接模型和缺的密钥合并进来。默认数据和命令行那份分开，免得两个入口互相踩。</p>
+  <p>Agent 怎么跑、插件怎么装、模型怎么选，仍是官方的事。这个窗口不另做一套对话能力，也不包装成官方客户端。</p>
+
+  <h2>声明</h2>
+  <ul>
+    <li>这是个人开发者 Zer0 做的第三方窗口，不是 DeepSeek 官方产品，与 DeepSeek 公司无隶属、无授权、无合作关系。</li>
+    <li>窗口里跑的就是官方包 <span class="mono">@deepseek-ai/dsh</span>。内核的行为、缺陷、兼容性以官方为准。</li>
+    <li>这个窗口负责：启动、数据目录、会话/模型同步、内核更新、诊断导出。不负责：Agent 效果、插件、官方模型本身。</li>
+    <li>API Key 只存在本机，用 Windows DPAPI 加密。这个窗口不会把 Key 上传到我这边。</li>
+    <li>默认数据在 <span class="mono">%APPDATA%\DSH Desktop\dsh-home</span>，和 <span class="mono">~/.dsh</span> 分开。若在设置里选择共用，两边读写同一目录，不要同时开官方 <span class="mono">dsh web</span> 和这个窗口。</li>
+    <li>内核是 RC，会变。主版本变化会先问你。更新失败不会覆盖你的会话。从 npm 同步官方内核往往要数分钟到十余分钟；进度到 90% 附近通常还在下载，条子偶尔会停一下，一般不是崩溃。首次打开和刚更新后的第一次启动都会偏慢。</li>
+    <li>程序未签名。Windows 可能提示未知发布者。</li>
+    <li>点右上角关闭会进托盘，进程和 <span class="mono">dsh web</span> 还在。要退出：托盘图标右键「退出」。</li>
+    <li>窗口或同步的问题：优先到 <a href="https://github.com/Zer0-stargazer/DSH-Desktop/issues" target="_blank" rel="noopener">本仓库 Issues</a> 开一条；也可设置 → 诊断 → 导出报告，发 <a href="mailto:gl20070126@gmail.com">gl20070126@gmail.com</a>。不要发送 API Key。内核、Agent、插件去 <a href="https://github.com/deepseek-ai/deepseek-harness/discussions" target="_blank" rel="noopener">官方 Discussions</a>。</li>
+  </ul>
+
+  <h2>联系</h2>
+  <p>
+    <a href="https://github.com/Zer0-stargazer/DSH-Desktop" target="_blank" rel="noopener">本仓库</a>
+    ·
+    <a href="https://github.com/Zer0-stargazer/DSH-Desktop/issues" target="_blank" rel="noopener">窗口问题与建议</a>
+    ·
+    <a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">官方仓库</a>
+    ·
+    <a href="https://github.com/deepseek-ai/deepseek-harness/discussions" target="_blank" rel="noopener">官方 Discussions</a>
+    ·
+    <a href="https://www.deepseek.com/harness/en/" target="_blank" rel="noopener">官方介绍页</a>
+    ·
+    <a href="mailto:gl20070126@gmail.com">gl20070126@gmail.com</a>
+  </p>
+</body>
+</html>

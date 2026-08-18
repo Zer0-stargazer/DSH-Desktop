@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'" />
+  <title>DSH Desktop 设置</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f8; --fg: #1f2328; --muted: #656d76; --text: #3d444d;
+      --card: #ffffff; --border: #d0d7de; --input: #ffffff; --btn: #f3f4f6;
+      --link: #0969da; --ok: #1a7f37; --warn: #9a6700; --err: #cf222e;
+      --nav: #eef0f2; --nav-on: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e; --text: #c9d1d9;
+        --card: #161b22; --border: #30363d; --input: #0d1117; --btn: #21262d;
+        --link: #58a6ff; --ok: #3fb950; --warn: #d29922; --err: #f85149;
+        --nav: #010409; --nav-on: #161b22;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+    }
+    nav {
+      width: 148px; flex-shrink: 0; background: var(--nav);
+      border-right: 1px solid var(--border); padding: 14px 10px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    nav button {
+      text-align: left; border: 0; background: transparent; color: var(--text);
+      padding: 8px 10px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    }
+    nav button.on { background: var(--nav-on); color: var(--fg); font-weight: 600; }
+    main { flex: 1; overflow: auto; padding: 20px 22px 28px; }
+    h1 { font-size: 16px; margin: 0 0 14px; }
+    .box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .row { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; gap: 12px; }
+    .k { color: var(--muted); font-size: 13px; }
+    .v { font-size: 13px; font-weight: 600; }
+    .badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+    .badge-ok { background: color-mix(in srgb, var(--link) 20%, transparent); color: var(--link); }
+    .badge-warn { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+    .badge-bad { background: color-mix(in srgb, var(--err) 20%, transparent); color: var(--err); }
+    button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      color: var(--fg);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover:not(:disabled) { filter: brightness(1.15); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .primary { background: #2f81f7; border-color: #2f81f7; color: #fff; font-weight: 600; }
+    .danger { color: var(--err); }
+    .status { font-size: 13px; color: var(--muted); min-height: 20px; margin-top: 10px; line-height: 1.6; }
+    .status.err { color: var(--err); }
+    .status.ok { color: var(--ok); }
+    .note { font-size: 12px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+    .mono { font-family: Consolas, monospace; }
+    .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); margin: 8px 0 12px; }
+    .pane { display: none; }
+    .pane.on { display: block; }
+    .bar { height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--muted) 22%, transparent); overflow: hidden; margin-top: 10px; }
+    .fill { height: 100%; width: 0; background: #2f81f7; border-radius: 99px; transition: width .25s ease; }
+    .fill.err { background: var(--err); }
+    .fill.ok { background: var(--ok); }
+    #upd-detail { font-size: 12px; color: var(--muted); margin-top: 6px; word-break: break-all; min-height: 16px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <button type="button" class="on" data-pane="general">常规</button>
+    <button type="button" data-pane="kernel">内核</button>
+    <button type="button" data-pane="sync">同步</button>
+    <button type="button" data-pane="community">社区</button>
+    <button type="button" data-pane="diag">诊断</button>
+  </nav>
+  <main>
+    <section class="pane on" id="pane-general">
+      <h1>常规</h1>
+      <div class="box">
+        <div class="row" style="margin-bottom:10px;">
+          <span class="k">关于</span>
+          <button id="btn-about" style="padding:6px 12px; font-size:12px;">打开</button>
+        </div>
+        <div class="note" style="border-top:none; padding-top:0; margin-top:0;">
+          个人开发者 Zer0 · 非官方。里面是官方 <span class="mono">dsh web</span>。
+          窗口问题：诊断页导出报告，发
+          <a href="mailto:gl20070126@gmail.com" style="color:var(--link);">gl20070126@gmail.com</a>。
+        </div>
+      </div>
+      <div class="box">
+        <div class="row" style="margin-bottom:12px;"><span class="k">数据目录</span></div>
+        <label class="toggle">
+          <input type="checkbox" id="pref-share-home" />
+          和本机 ~/.dsh 共用数据
+        </label>
+        <div class="row" style="margin:6px 0 10px;">
+          <span class="k">当前 DSH_HOME</span>
+          <span class="v mono" id="cur-home" style="font-size:12px; font-weight:400; max-width:360px; text-align:right; word-break:break-all;">…</span>
+        </div>
+        <div class="status" id="home-status"></div>
+        <div class="note" style="margin-top:8px; padding-top:8px;">
+          默认独立目录。勾上后和网页端同一份数据，改完重启。两边不要同时开。
+        </div>
+      </div>
+      <div class="box">
+        <div class="row" style="margin-bottom:8px;"><span class="k">启动时</span></div>
+        <label class="toggle">
+          <input type="checkbox" id="pref-auto-update" />
+          自动检查并安装内核更新（要下载，可能较久）
+        </label>
+        <label class="toggle">
+          <input type="checkbox" id="pref-auto-sessions" />
+          同步会话和外接模型
+        </label>
+      </div>
+    </section>
+
+    <section class="pane" id="pane-kernel">
+      <h1>内核</h1>
+      <div class="box">
+        <div class="row"><span class="k">当前内核版本</span><span class="v mono" id="ver">…</span></div>
+        <div class="row"><span class="k">内核来源</span><span class="v" id="src">…</span></div>
+        <div class="row"><span class="k">兼容性</span><span class="v" id="compat">…</span></div>
+        <div class="row"><span class="k">已测版本</span><span class="v mono" id="tested">…</span></div>
+        <div class="row" id="row-last-update" style="display:none;"><span class="k">上次更新</span><span class="v" id="last-update-info">…</span></div>
+      </div>
+      <div class="box">
+        <div class="row" style="margin-bottom:12px;"><span class="k">官方更新</span></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="btn-check">检查更新</button>
+          <button id="btn-apply" class="primary" disabled>同步官方更新</button>
+          <button id="btn-rollback" class="danger" disabled>回滚到自带内核</button>
+        </div>
+        <div class="bar"><div class="fill" id="upd-fill"></div></div>
+        <div class="status" id="status"></div>
+        <div id="upd-detail"></div>
+        <div class="note">
+          从 npm 拉 <span class="mono">@deepseek-ai/dsh</span>。会走系统代理或本机 Clash（7897）。主版本变化会确认。会话不会被覆盖。
+        </div>
+      </div>
+    </section>
+
+    <section class="pane" id="pane-sync">
+      <h1>同步网页端</h1>
+      <div class="box" id="box-sync">
+        <div class="row" style="margin-bottom:10px;">
+          <span class="k">源目录（网页版 DSH_HOME）</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="source-home" placeholder="自动检测 ~/.dsh" spellcheck="false"
+                 style="flex:1; padding:9px 10px; border-radius:8px; border:1px solid var(--border); background:var(--input); color:var(--fg); font-size:13px;" />
+          <button id="btn-detect">重新检测</button>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button id="btn-import" class="primary" disabled>立即同步</button>
+        </div>
+        <div class="status" id="import-status"></div>
+        <div class="note">
+          合并本机 ~/.dsh 的会话、标题、外接模型和缺的密钥。已有的不会被盖掉。已共用目录时不必再拷。
+        </div>
+      </div>
+    </section>
+
+    <section class="pane" id="pane-community">
+      <h1>社区</h1>
+      <div class="box">
+        <div class="row" style="margin-bottom:12px;">
+          <span class="k">官方动态</span>
+          <button id="btn-dyn-refresh" style="padding:6px 12px; font-size:12px;">刷新</button>
+        </div>
+        <div class="row"><span class="k">内核版本</span><span class="v mono" id="dyn-ver">…</span></div>
+        <div class="row"><span class="k">npm 最新版</span><span class="v mono" id="dyn-latest">…</span></div>
+        <div id="dyn-releases" style="margin:8px 0;"></div>
+        <div class="status" id="dyn-status"></div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;" id="dyn-links"></div>
+        <div class="note">GitHub Releases 和 npm。第三方入口已标明。</div>
+      </div>
+    </section>
+
+    <section class="pane" id="pane-diag">
+      <h1>诊断</h1>
+      <div class="box">
+        <div class="row">
+          <span class="k">本地诊断</span>
+          <button id="btn-diag">导出诊断报告</button>
+        </div>
+        <div class="status" id="diag-status"></div>
+        <div class="note">版本、脱敏配置和日志，存你选的位置。发给 gl20070126@gmail.com。</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const setStatus = (m, cls) => { const el = $('status'); el.textContent = m; el.className = 'status' + (cls ? ' ' + cls : ''); };
+
+    function showPane(name) {
+      const id = String(name || 'general');
+      document.querySelectorAll('.pane').forEach((el) => el.classList.toggle('on', el.id === 'pane-' + id));
+      document.querySelectorAll('nav button').forEach((el) => el.classList.toggle('on', el.getAttribute('data-pane') === id));
+      if (id === 'community' && !showPane._dyn) {
+        showPane._dyn = true;
+        loadDynamics();
+      }
+      if (id === 'sync') detect().catch(() => {});
+    }
+    window.__showPane = showPane;
+    document.querySelectorAll('nav button').forEach((btn) => {
+      btn.addEventListener('click', () => showPane(btn.getAttribute('data-pane')));
+    });
+
+    function compatBadge(info) {
+      if (info.compatible) return '<span class="badge badge-ok">已测范围内</span>';
+      if (info.compatLevel === 'major') return '<span class="badge badge-bad">主版本不一致</span>';
+      if (info.compatLevel === 'minor') return '<span class="badge badge-warn">次版本不一致</span>';
+      return '<span class="badge badge-warn">未知</span>';
+    }
+
+    function applyProgress(p) {
+      if (!p) return;
+      const n = Math.max(0, Math.min(100, Math.round(Number(p.percent) || 0)));
+      $('upd-fill').style.width = n + '%';
+      $('upd-fill').className = 'fill' + (p.phase === 'error' ? ' err' : p.phase === 'done' ? ' ok' : '');
+      if (p.phase === 'error') setStatus(p.text || '更新失败', 'err');
+      else if (p.phase === 'done') setStatus(p.text || '完成', 'ok');
+      else if (p.text) setStatus(p.text);
+      $('upd-detail').textContent = p.error || p.hint || (p.proxy ? ('代理 ' + p.proxy) : '');
+    }
+
+    async function refresh() {
+      const info = await window.desktop.kernelInfo();
+      const st = await window.desktop.getState();
+      $('ver').textContent = info.version || '未知';
+      $('src').textContent = info.source === 'installed' ? '已更新（用户目录）' : '自带（随应用）';
+      $('compat').innerHTML = compatBadge(info);
+      $('tested').textContent = info.testedVersion;
+      $('btn-rollback').disabled = info.source !== 'installed';
+
+      // 显示上次更新状态
+      if (st.lastUpdateOk === false && st.lastUpdateAttempt) {
+        const t = Date.parse(st.lastUpdateAttempt);
+        if (Number.isFinite(t)) {
+          const cooldownMs = 6 * 3600 * 1000;
+          const elapsed = Date.now() - t;
+          const remaining = cooldownMs - elapsed;
+          let msg = st.lastUpdateError ? ('失败：' + String(st.lastUpdateError).slice(0, 100)) : '失败';
+          if (remaining > 0) {
+            const hours = Math.ceil(remaining / (3600 * 1000));
+            msg += `（冷却中，约 ${hours} 小时后自动重试）`;
+          }
+          $('row-last-update').style.display = '';
+          $('last-update-info').textContent = msg;
+          $('last-update-info').style.color = 'var(--err)';
+        } else {
+          $('row-last-update').style.display = 'none';
+        }
+      } else {
+        $('row-last-update').style.display = 'none';
+      }
+
+      return info;
+    }
+
+    async function checkOfficial(auto) {
+      $('btn-check').disabled = true;
+      if (!auto) setStatus('正在查询 npm 最新版本…');
+      try {
+        const r = await window.desktop.checkUpdate();
+        if (r.hasUpdate) {
+          setStatus(`发现官方新版本 ${r.latest}（当前 ${r.current}）`, 'ok');
+          $('btn-apply').disabled = false;
+        } else {
+          setStatus(`已是最新：${r.current}`, 'ok');
+          $('btn-apply').disabled = true;
+        }
+        return r;
+      } catch (e) {
+        setStatus('检查失败：' + (e && e.message ? e.message : e), 'err');
+        return null;
+      } finally {
+        $('btn-check').disabled = false;
+      }
+    }
+
+    $('btn-about').addEventListener('click', () => {
+      if (window.desktop && window.desktop.openAbout) window.desktop.openAbout();
+    });
+    $('btn-check').addEventListener('click', () => checkOfficial(false));
+
+    $('btn-apply').addEventListener('click', async () => {
+      $('btn-apply').disabled = true;
+      setStatus('正在同步官方内核…');
+      showPane('kernel');
+      try {
+        const r = await window.desktop.syncOfficialUpdate();
+        if (r.applied) {
+          setStatus(`已更新到 ${r.version}，重启后生效。`, 'ok');
+        } else {
+          setStatus(`已是最新 ${r.current}`, 'ok');
+        }
+        await refresh();
+      } catch (e) {
+        setStatus('同步失败：' + (e && e.message ? e.message : e), 'err');
+        $('btn-apply').disabled = false;
+      }
+    });
+
+    $('btn-rollback').addEventListener('click', async () => {
+      setStatus('正在回滚到自带内核…');
+      try {
+        await window.desktop.rollback();
+        setStatus('已回滚到自带内核。重启应用后生效。', 'ok');
+        await refresh();
+      } catch (e) {
+        setStatus('回滚失败：' + (e && e.message ? e.message : e), 'err');
+      }
+    });
+
+    const importStatus = (m, cls) => { const el = $('import-status'); el.textContent = m; el.className = 'status' + (cls ? ' ' + cls : ''); };
+    let detectedHome = '';
+
+    async function detect() {
+      if ($('pref-share-home').checked) {
+        applyShareUi(true);
+        return;
+      }
+      $('btn-detect').disabled = true;
+      importStatus('正在检测网页端会话…');
+      try {
+        const r = await window.desktop.detectSource($('source-home').value.trim());
+        if (r.exists) {
+          detectedHome = r.home;
+          $('source-home').value = r.home;
+          const sizeMB = (r.size / 1024 / 1024).toFixed(1);
+          let extra = '';
+          try {
+            const st = await window.desktop.getState();
+            if (st.lastSessionSync) extra = `；上次同步 ${st.lastSessionSync.replace('T', ' ').slice(0, 19)}`;
+          } catch {}
+          importStatus(`检测到 ${r.count} 个会话文件（${sizeMB} MB）${extra}`, 'ok');
+          $('btn-import').disabled = false;
+        } else {
+          detectedHome = '';
+          importStatus('未找到会话目录：' + r.sessionsDir, 'err');
+          $('btn-import').disabled = true;
+        }
+      } catch (e) {
+        importStatus('检测失败：' + (e && e.message ? e.message : e), 'err');
+      } finally {
+        $('btn-detect').disabled = false;
+      }
+    }
+
+    $('btn-detect').addEventListener('click', detect);
+    $('btn-import').addEventListener('click', async () => {
+      $('btn-import').disabled = true;
+      importStatus('正在同步网页端会话与外接模型…');
+      try {
+        const src = $('source-home').value.trim() || detectedHome;
+        const r = await window.desktop.syncSessions(src);
+        const models = r.models && r.models.providersAdded ? r.models.providersAdded.length : 0;
+        const keys = r.credentials && r.credentials.keysAdded ? r.credentials.keysAdded.length : 0;
+        const titles = r.projcache ? ((r.projcache.added || 0) + (r.projcache.updated || 0)) : 0;
+        importStatus(`完成：会话 +${r.copied} / 更新 ${r.updated}，标题 ${titles}，模型 ${models}，密钥 ${keys}。共 ${r.destCount} 个会话。`, 'ok');
+        $('btn-import').disabled = false;
+      } catch (e) {
+        importStatus('同步失败：' + (e && e.message ? e.message : e), 'err');
+        $('btn-import').disabled = false;
+      }
+    });
+
+    const dynStatus = (m, cls) => { const el = $('dyn-status'); el.textContent = m; el.className = 'status' + (cls ? ' ' + cls : ''); };
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+    async function loadDynamics() {
+      $('btn-dyn-refresh').disabled = true;
+      dynStatus('正在获取官方动态…');
+      try {
+        const d = await window.desktop.getDynamics();
+        $('dyn-ver').textContent = d.currentVersion || '未知';
+        if (d.npmLatest) {
+          $('dyn-latest').textContent = d.npmLatest + (d.hasUpdate ? '  ← 有更新' : '');
+          $('dyn-latest').style.color = d.hasUpdate ? 'var(--warn)' : 'var(--fg)';
+        } else {
+          $('dyn-latest').textContent = '获取失败';
+        }
+        const rel = $('dyn-releases');
+        if (d.githubReleases && d.githubReleases.length) {
+          rel.innerHTML = '<div class="k" style="margin-bottom:4px;">最新发布</div>' + d.githubReleases.map((x) =>
+            `<div style="margin:3px 0;"><a href="${esc(x.url)}" target="_blank" rel="noopener" style="color:var(--link);font-size:13px;text-decoration:none;">${esc(x.name || x.tag)}</a> <span style="color:var(--muted);font-size:12px;">${esc((x.date || '').slice(0, 10))}</span></div>`
+          ).join('');
+        } else {
+          rel.innerHTML = d.githubError ? '<div class="k">GitHub 无法连接，见下方链接</div>' : '';
+        }
+        const groups = [];
+        for (const l of (d.communityLinks || [])) {
+          const g = l.group || (l.official ? '官方' : '社区');
+          let bucket = groups.find((x) => x.name === g);
+          if (!bucket) { bucket = { name: g, items: [] }; groups.push(bucket); }
+          bucket.items.push(l);
+        }
+        $('dyn-links').innerHTML = groups.map((g) =>
+          `<div class="k" style="margin:8px 0 4px;">${esc(g.name)}</div>` +
+          g.items.map((l) =>
+            `<a href="${esc(l.url)}" target="_blank" rel="noopener" style="color:var(--link);font-size:13px;text-decoration:none;display:block;margin:3px 0;">${esc(l.name)}${l.official ? '' : ' <span style="color:var(--warn);font-size:11px;">（第三方）</span>'}</a>`
+          ).join('')
+        ).join('');
+        dynStatus(d.hasUpdate ? '有新版本，到「内核」里同步。' : '');
+      } catch (e) {
+        dynStatus('获取动态失败：' + (e && e.message ? e.message : e), 'err');
+      } finally {
+        $('btn-dyn-refresh').disabled = false;
+      }
+    }
+    $('btn-dyn-refresh').addEventListener('click', loadDynamics);
+
+    $('btn-diag').addEventListener('click', async () => {
+      const st = $('diag-status');
+      st.textContent = '正在生成…';
+      try {
+        const r = await window.desktop.exportDiagnostic();
+        st.textContent = r.saved ? '已保存：' + r.path : '已取消';
+      } catch (e) {
+        st.textContent = '失败：' + (e && e.message ? e.message : e);
+      }
+    });
+
+    function applyShareUi(sharing) {
+      $('pref-auto-sessions').disabled = !!sharing;
+      $('btn-import').disabled = !!sharing || !detectedHome;
+      $('btn-detect').disabled = !!sharing;
+      $('source-home').disabled = !!sharing;
+      if (sharing) importStatus('已共用目录。', 'ok');
+    }
+    async function refreshHome() {
+      try {
+        const st = await window.desktop.getState();
+        $('cur-home').textContent = st.dshHome || '…';
+        $('pref-share-home').checked = !!(st.prefs && st.prefs.shareWebHome);
+        applyShareUi(!!(st.prefs && st.prefs.shareWebHome));
+      } catch {}
+    }
+    async function loadPrefs() {
+      try {
+        const p = await window.desktop.getPrefs();
+        $('pref-auto-update').checked = !!p.autoUpdateKernel;
+        $('pref-auto-sessions').checked = !!p.autoSyncSessions;
+        $('pref-share-home').checked = !!p.shareWebHome;
+        applyShareUi(!!p.shareWebHome);
+      } catch {}
+      await refreshHome();
+    }
+    async function savePref(partial) {
+      try {
+        const r = await window.desktop.setPrefs(partial);
+        if (r && r.cancelled) {
+          $('pref-share-home').checked = false;
+          $('home-status').textContent = '未改。';
+          $('home-status').className = 'status';
+          return r;
+        }
+        if (r && r.homeChanged) {
+          $('home-status').innerHTML = '已保存，重启后生效。 <button id="btn-relaunch" class="primary" style="margin-left:8px; padding:6px 12px; font-size:12px;">重启</button>';
+          $('home-status').className = 'status ok';
+          const btn = $('btn-relaunch');
+          if (btn) btn.addEventListener('click', () => window.desktop.relaunch());
+          applyShareUi(!!$('pref-share-home').checked);
+        }
+        return r;
+      } catch (e) {
+        setStatus('保存偏好失败：' + (e && e.message ? e.message : e), 'err');
+      }
+    }
+    $('pref-auto-update').addEventListener('change', () => savePref({ autoUpdateKernel: $('pref-auto-update').checked }));
+    $('pref-auto-sessions').addEventListener('change', () => savePref({ autoSyncSessions: $('pref-auto-sessions').checked }));
+    $('pref-share-home').addEventListener('change', () => savePref({ shareWebHome: $('pref-share-home').checked }));
+
+    if (window.desktop && window.desktop.onUpdateProgress) {
+      window.desktop.onUpdateProgress(applyProgress);
+      window.desktop.updateProgressNow().then(applyProgress).catch(() => {});
+    }
+
+    refresh().catch((e) => setStatus('读取内核信息失败：' + (e && e.message ? e.message : e), 'err'));
+    loadPrefs().catch(() => {});
+    checkOfficial(true).catch(() => {});
+  </script>
+</body>
+</html>
